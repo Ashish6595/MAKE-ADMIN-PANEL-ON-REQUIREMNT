@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SmartHome Manager - Simulated Automation Dashboard</title>
+  <link rel="stylesheet" href="style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+  <!-- AUTH OVERLAY MODAL -->
+  <div id="authModal" class="modal-overlay">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h2 id="authTitle">🏠 SmartHome Manager</h2>
+        <p class="subtitle">Virtual Home Automation & Device Management System</p>
+      </div>
+
+      <div class="tab-switcher">
+        <button id="showLoginBtn" class="tab-btn active">Login</button>
+        <button id="showRegisterBtn" class="tab-btn">Register Household</button>
+      </div>
+
+      <!-- Login Form -->
+      <form id="loginForm" class="auth-form">
+        <div class="form-group">
+          <label>Email Address</label>
+          <input type="email" id="loginEmail" placeholder="admin@smarthome.local" required value="admin@smarthome.local">
+        </div>
+        <div class="form-group">
+          <label>Password</label>
+          <input type="password" id="loginPassword" placeholder="••••••••" required value="Admin@123">
+        </div>
+        <button type="submit" class="primary-btn full-btn">Sign In to Dashboard</button>
+        <p class="quick-hint">💡 Demo quick-seed: register to create your own household instantly.</p>
+      </form>
+
+      <!-- Register Form -->
+      <form id="registerForm" class="auth-form hidden">
+        <div class="form-group">
+          <label>Full Name / Username</label>
+          <input type="text" id="regUsername" placeholder="e.g. rahul_sharma" required>
+        </div>
+        <div class="form-group">
+          <label>Household Name</label>
+          <input type="text" id="regHouseholdName" placeholder="e.g. Sharma Family Residence" required>
+        </div>
+        <div class="form-group">
+          <label>Email</label>
+          <input type="email" id="regEmail" placeholder="e.g. rahul@example.com" required>
+        </div>
+        <div class="form-group">
+          <label>Password</label>
+          <input type="password" id="regPassword" placeholder="••••••••" required>
+        </div>
+        <div class="form-group">
+          <label>Primary Role</label>
+          <select id="regRole">
+            <option value="admin">Admin (Full Control)</option>
+            <option value="guest">Guest (Control Only)</option>
+            <option value="child">Child (Restricted)</option>
+          </select>
+        </div>
+        <button type="submit" class="primary-btn full-btn">Create Household & Account</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- MAIN APP CONTAINER -->
+  <div id="appContainer" class="hidden">
+    
+    <!-- Top Navigation Bar -->
+    <header class="top-nav">
+      <div class="nav-left">
+        <span class="logo-icon">🏠</span>
+        <div>
+          <h1 id="navHouseholdName">SmartHome Manager</h1>
+          <span id="userBadge" class="badge role-admin">Admin</span>
+        </div>
+      </div>
+
+      <!-- Voice Command Quick Bar -->
+      <div class="voice-bar">
+        <input type="text" id="voiceInput" placeholder="🎙️ Voice command: e.g. 'Turn off all lights' or 'Set thermostat to 22'">
+        <button id="voiceSendBtn" class="voice-btn">Send Command</button>
+      </div>
+
+      <div class="nav-right">
+        <button id="emergencyToggleBtn" class="emergency-btn">🚨 Emergency Mode</button>
+        <button id="logoutBtn" class="secondary-btn">Logout</button>
+      </div>
+    </header>
+
+    <!-- Voice Response Bubble -->
+    <div id="voiceFeedback" class="voice-feedback hidden">
+      <span class="voice-icon">🤖</span>
+      <span id="voiceFeedbackText"></span>
+    </div>
+
+    <!-- Emergency Mode Banner -->
+    <div id="emergencyBanner" class="emergency-banner hidden">
+      <div class="banner-content">
+        <span class="pulse-icon">⚠️</span>
+        <div>
+          <strong>EMERGENCY MODE ACTIVE</strong>
+          <p>All appliances powered off automatically and all virtual security doors locked.</p>
+        </div>
+      </div>
+      <button id="deactivateEmergencyBtn" class="banner-btn">Deactivate Emergency</button>
+    </div>
+
+    <!-- Alert Ticker -->
+    <div id="alertContainer" class="alert-container"></div>
+
+    <!-- Main Navigation Tabs -->
+    <nav class="nav-tabs">
+      <button class="nav-tab active" data-tab="dashboardTab">📱 Device Dashboard</button>
+      <button class="nav-tab" data-tab="addDeviceTab">➕ Create Device</button>
+      <button class="nav-tab" data-tab="roomsTab">🚪 Rooms</button>
+      <button class="nav-tab" data-tab="routinesTab">⏰ Routines & Groups</button>
+      <button class="nav-tab" data-tab="energyTab">⚡ Energy Tracking</button>
+      <button class="nav-tab" data-tab="aiInsightsTab">🧠 Smart AI Insights</button>
+      <button class="nav-tab" data-tab="membersTab">👥 Family Roles</button>
+    </nav>
+
+    <!-- TAB 1: DEVICE DASHBOARD -->
+    <main id="dashboardTab" class="tab-pane active">
+      <div class="pane-header">
+        <div>
+          <h2>Appliance Control Dashboard</h2>
+          <p class="subtitle">Monitor and control your connected virtual smart devices</p>
+        </div>
+        <div class="filter-group">
+          <label>Filter by Room:</label>
+          <select id="roomFilterSelect">
+            <option value="all">All Rooms</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Device Cards Grid -->
+      <div id="deviceGrid" class="device-grid">
+        <!-- Rendered dynamically -->
+      </div>
+    </main>
+
+    <!-- TAB 2: CREATE SIMULATED DEVICE -->
+    <section id="addDeviceTab" class="tab-pane">
+      <div class="pane-header">
+        <h2>Simulated Device Creation</h2>
+        <p class="subtitle">Add a simulated IoT device to your smart home system</p>
+      </div>
+
+      <div class="card-form-container">
+        <form id="createDeviceForm" class="standard-form">
+          <div class="form-row">
+            <div class="form-group">
+              <label>Device Name</label>
+              <input type="text" id="newDevName" placeholder="e.g. Master Bedroom Smart Lamp" required>
+            </div>
+            <div class="form-group">
+              <label>Device Type</label>
+              <select id="newDevType" required>
+                <option value="lamp">Smart Lamp (Dimmer & Color Mode)</option>
+                <option value="fan">Ceiling Fan (3-Speed Control)</option>
+                <option value="thermostat">Thermostat (18°C - 30°C)</option>
+                <option value="ac">Air Conditioner (Cool/Eco Mode)</option>
+                <option value="heater">Heater (Overheat Safeguard)</option>
+                <option value="door">Smart Door Lock (Virtual Lock)</option>
+                <option value="coffeemaker">Coffee Maker (Morning Brew)</option>
+                <option value="tv">Smart Entertainment TV</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label>Assign to Room</label>
+              <select id="newDevRoom" required></select>
+            </div>
+            <div class="form-group">
+              <label>Rated Wattage (W) (Simulated)</label>
+              <input type="number" id="newDevWattage" placeholder="e.g. 75">
+            </div>
+          </div>
+
+          <button type="submit" class="primary-btn">Create Simulated Device</button>
+        </form>
+      </div>
+    </section>
+
+    <!-- TAB 3: ROOMS -->
+    <section id="roomsTab" class="tab-pane">
+      <div class="pane-header">
+        <h2>Household Rooms</h2>
+        <p class="subtitle">Organize appliances into household rooms</p>
+      </div>
+
+      <div class="rooms-container">
+        <div class="room-create-box">
+          <h3>Add New Room</h3>
+          <form id="createRoomForm">
+            <div class="form-group">
+              <label>Room Name</label>
+              <input type="text" id="newRoomName" placeholder="e.g. Balcony or Kitchen" required>
+            </div>
+            <div class="form-group">
+              <label>Description</label>
+              <input type="text" id="newRoomDesc" placeholder="e.g. First floor guest bedroom">
+            </div>
+            <button type="submit" class="primary-btn">Create Room</button>
+          </form>
+        </div>
+
+        <div class="rooms-list-box">
+          <h3>Existing Rooms</h3>
+          <div id="roomsList" class="rooms-grid"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB 4: ROUTINES & GROUPS -->
+    <section id="routinesTab" class="tab-pane">
+      <div class="pane-header">
+        <h2>Routine Scheduling & Device Groups</h2>
+        <p class="subtitle">Automate everyday actions and group appliances for 1-click collective control</p>
+      </div>
+
+      <div class="two-column-layout">
+        <!-- Routines Column -->
+        <div class="column-card">
+          <div class="col-header">
+            <h3>⏰ Scheduled Routines</h3>
+            <button id="openNewRoutineBtn" class="small-btn">+ New Routine</button>
+          </div>
+          <div id="routinesList" class="stack-list"></div>
+        </div>
+
+        <!-- Groups Column -->
+        <div class="column-card">
+          <div class="col-header">
+            <h3>🗂️ Device Groups</h3>
+            <button id="openNewGroupBtn" class="small-btn">+ New Group</button>
+          </div>
+          <div id="groupsList" class="stack-list"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB 5: ENERGY TRACKING -->
+    <section id="energyTab" class="tab-pane">
+      <div class="pane-header">
+        <h2>Simulated Energy Usage Tracking</h2>
+        <p class="subtitle">Real-time simulation of appliance power consumption & costs</p>
+      </div>
+
+      <div class="energy-kpi-row">
+        <div class="kpi-card">
+          <span class="kpi-title">Total Simulated Consumption</span>
+          <span id="totalEnergyKWh" class="kpi-value">0.00 kWh</span>
+          <span class="kpi-sub">Calculated from wattage & active hours</span>
+        </div>
+        <div class="kpi-card">
+          <span class="kpi-title">Estimated Cost</span>
+          <span id="estimatedCost" class="kpi-value">$0.00</span>
+          <span class="kpi-sub">Rate: $0.15 per kWh</span>
+        </div>
+        <div class="kpi-card">
+          <span class="kpi-title">Monitored Appliances</span>
+          <span id="monitoredCount" class="kpi-value">0</span>
+          <span class="kpi-sub">Connected devices</span>
+        </div>
+      </div>
+
+      <div class="table-card">
+        <h3>Appliance Breakdown</h3>
+        <table class="standard-table">
+          <thead>
+            <tr>
+              <th>Device</th>
+              <th>Room</th>
+              <th>Wattage</th>
+              <th>Run Time (Hrs)</th>
+              <th>Simulated Energy (kWh)</th>
+            </tr>
+          </thead>
+          <tbody id="energyTableBody"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- TAB 6: SMART AI INSIGHTS -->
+    <section id="aiInsightsTab" class="tab-pane">
+      <div class="pane-header">
+        <h2>🧠 Smart Usage Prediction & Efficiency AI</h2>
+        <p class="subtitle">Algorithms learning household habits to suggest automations & reduce power waste</p>
+      </div>
+
+      <div class="two-column-layout">
+        <div class="column-card">
+          <h3>📈 Usage Habit Predictions</h3>
+          <p class="section-desc">Learns from simulated logs to suggest automated schedules:</p>
+          <div id="predictionsList" class="stack-list"></div>
+        </div>
+
+        <div class="column-card">
+          <h3>🌱 Energy Efficiency Recommendations</h3>
+          <p class="section-desc">Intelligent tips based on real-time appliance usage:</p>
+          <div id="recommendationsList" class="stack-list"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB 7: FAMILY ROLES -->
+    <section id="membersTab" class="tab-pane">
+      <div class="pane-header">
+        <h2>Household Role Management (RBAC)</h2>
+        <p class="subtitle">Multi-user access control: Admin, Guest, Child</p>
+      </div>
+
+      <div class="two-column-layout">
+        <div class="column-card">
+          <h3>Role Privileges Guide</h3>
+          <ul class="role-guide-list">
+            <li><strong>👑 Admin:</strong> Full permissions (create/delete devices, routines, trigger emergency).</li>
+            <li><strong>👤 Guest:</strong> Can toggle On/Off connected devices. Cannot delete devices or modify schedules.</li>
+            <li><strong>🧒 Child:</strong> Safe access only. Restricted from hazardous appliances (heater, door locks, emergency mode).</li>
+          </ul>
+        </div>
+
+        <div class="column-card">
+          <h3>Add Household Member</h3>
+          <form id="addMemberForm">
+            <div class="form-group">
+              <label>Member Username</label>
+              <input type="text" id="memberUsername" placeholder="e.g. priya_guest" required>
+            </div>
+            <div class="form-group">
+              <label>Email</label>
+              <input type="email" id="memberEmail" placeholder="e.g. priya@example.com" required>
+            </div>
+            <div class="form-group">
+              <label>Password</label>
+              <input type="password" id="memberPassword" placeholder="••••••••" required>
+            </div>
+            <div class="form-group">
+              <label>Assign Role</label>
+              <select id="memberRole">
+                <option value="guest">Guest (Device Control Only)</option>
+                <option value="child">Child (Restricted Safety Mode)</option>
+              </select>
+            </div>
+            <button type="submit" class="primary-btn">Add Family Member</button>
+          </form>
+        </div>
+      </div>
+    </section>
+
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>

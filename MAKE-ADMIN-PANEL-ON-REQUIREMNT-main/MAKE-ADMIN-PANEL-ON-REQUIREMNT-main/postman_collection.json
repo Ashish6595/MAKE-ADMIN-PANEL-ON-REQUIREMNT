@@ -1,0 +1,252 @@
+{
+  "info": {
+    "name": "SmartHome_Manager API Collection",
+    "description": "Complete collection for SmartHome Manager L1, L2, and Challenging features",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "1. Authentication & Setup",
+      "item": [
+        {
+          "name": "Register User & Setup Household",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"rahul_sharma\",\n  \"householdName\": \"Sharma Smart Home\",\n  \"email\": \"rahul@example.com\",\n  \"password\": \"Password@123\",\n  \"role\": \"admin\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/auth/register", "host": ["{{baseUrl}}"], "path": ["api", "auth", "register"] }
+          }
+        },
+        {
+          "name": "Login User",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"rahul@example.com\",\n  \"password\": \"Password@123\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/auth/login", "host": ["{{baseUrl}}"], "path": ["api", "auth", "login"] }
+          }
+        },
+        {
+          "name": "Add Household Member (Guest/Child)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{adminToken}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"guest_priya\",\n  \"email\": \"priya@example.com\",\n  \"password\": \"GuestPass@123\",\n  \"role\": \"guest\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/auth/add-member", "host": ["{{baseUrl}}"], "path": ["api", "auth", "add-member"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "2. Rooms",
+      "item": [
+        {
+          "name": "Get All Rooms",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{adminToken}}" }],
+            "url": { "raw": "{{baseUrl}}/api/rooms", "host": ["{{baseUrl}}"], "path": ["api", "rooms"] }
+          }
+        },
+        {
+          "name": "Create Room",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{adminToken}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Kitchen\",\n  \"description\": \"Ground floor cooking area\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/rooms", "host": ["{{baseUrl}}"], "path": ["api", "rooms"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "3. Simulated Device Management (L2)",
+      "item": [
+        {
+          "name": "Create Smart Lamp",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{adminToken}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Living Room Smart Lamp\",\n  \"deviceType\": \"lamp\",\n  \"roomId\": \"{{roomId}}\",\n  \"features\": {\n    \"brightness\": 80,\n    \"colorMode\": \"Warm\"\n  }\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/devices", "host": ["{{baseUrl}}"], "path": ["api", "devices"] }
+          }
+        },
+        {
+          "name": "Create Ceiling Fan (3 Speed)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{adminToken}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Ceiling Fan\",\n  \"deviceType\": \"fan\",\n  \"roomId\": \"{{roomId}}\",\n  \"features\": {\n    \"speed\": \"Medium\"\n  }\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/devices", "host": ["{{baseUrl}}"], "path": ["api", "devices"] }
+          }
+        },
+        {
+          "name": "Connect Device (Handshake)",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Authorization", "value": "Bearer {{adminToken}}" }],
+            "url": { "raw": "{{baseUrl}}/api/devices/{{deviceId}}/connect", "host": ["{{baseUrl}}"], "path": ["api", "devices", "{{deviceId}}", "connect"] }
+          }
+        },
+        {
+          "name": "Control Device State (Power, Dimmer, Speed)",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{adminToken}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"powerState\": \"on\",\n  \"features\": {\n    \"brightness\": 90,\n    \"temperature\": 23\n  }\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/devices/{{deviceId}}/control", "host": ["{{baseUrl}}"], "path": ["api", "devices", "{{deviceId}}", "control"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "4. Routines & Groups",
+      "item": [
+        {
+          "name": "Create Routine",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{adminToken}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Night Routine\",\n  \"scheduledTime\": \"22:00\",\n  \"actions\": [\n    { \"deviceId\": \"{{deviceId}}\", \"targetPowerState\": \"off\" }\n  ]\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/routines", "host": ["{{baseUrl}}"], "path": ["api", "routines"] }
+          }
+        },
+        {
+          "name": "Execute Routine",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Authorization", "value": "Bearer {{adminToken}}" }],
+            "url": { "raw": "{{baseUrl}}/api/routines/{{routineId}}/execute", "host": ["{{baseUrl}}"], "path": ["api", "routines", "{{routineId}}", "execute"] }
+          }
+        },
+        {
+          "name": "Trigger Device Group",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{adminToken}}" }
+            ],
+            "body": { "mode": "raw", "raw": "{\n  \"powerState\": \"on\"\n}" },
+            "url": { "raw": "{{baseUrl}}/api/groups/{{groupId}}/trigger", "host": ["{{baseUrl}}"], "path": ["api", "groups", "{{groupId}}", "trigger"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "5. Emergency Mode & Voice Control",
+      "item": [
+        {
+          "name": "Activate Emergency Mode",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Authorization", "value": "Bearer {{adminToken}}" }],
+            "url": { "raw": "{{baseUrl}}/api/smart/emergency/activate", "host": ["{{baseUrl}}"], "path": ["api", "smart", "emergency", "activate"] }
+          }
+        },
+        {
+          "name": "Deactivate Emergency Mode",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Authorization", "value": "Bearer {{adminToken}}" }],
+            "url": { "raw": "{{baseUrl}}/api/smart/emergency/deactivate", "host": ["{{baseUrl}}"], "path": ["api", "smart", "emergency", "deactivate"] }
+          }
+        },
+        {
+          "name": "Voice Command - Turn Off All Lights",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{adminToken}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"command\": \"Turn off all lights\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/smart/voice-command", "host": ["{{baseUrl}}"], "path": ["api", "smart", "voice-command"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "6. Energy & AI Analytics",
+      "item": [
+        {
+          "name": "Get Energy Report",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{adminToken}}" }],
+            "url": { "raw": "{{baseUrl}}/api/energy/report", "host": ["{{baseUrl}}"], "path": ["api", "energy", "report"] }
+          }
+        },
+        {
+          "name": "Get Usage Predictions",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{adminToken}}" }],
+            "url": { "raw": "{{baseUrl}}/api/smart/usage-prediction", "host": ["{{baseUrl}}"], "path": ["api", "smart", "usage-prediction"] }
+          }
+        },
+        {
+          "name": "Get Efficiency Recommendations",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{adminToken}}" }],
+            "url": { "raw": "{{baseUrl}}/api/smart/energy-recommendations", "host": ["{{baseUrl}}"], "path": ["api", "smart", "energy-recommendations"] }
+          }
+        }
+      ]
+    }
+  ],
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:5000" },
+    { "key": "adminToken", "value": "" },
+    { "key": "roomId", "value": "" },
+    { "key": "deviceId", "value": "" },
+    { "key": "routineId", "value": "" },
+    { "key": "groupId", "value": "" }
+  ]
+}
